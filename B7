@@ -1,0 +1,324 @@
+-- سكريبت b7 الرئيسي مع قوائم Sky, Shift Lock, Fling, و Old animation
+local CoreGui = game:GetService("CoreGui")
+local Lighting = game:GetService("Lighting")
+local Players = game:GetService("Players")
+local localPlayer = Players.LocalPlayer
+
+-- حذف النسخة القديمة إن وجدت لمنع التكرار
+if CoreGui:FindFirstChild("b7") then
+	CoreGui.b7:Destroy()
+end
+
+local ScreenGui = Instance.new("ScreenGui")
+ScreenGui.Name = "b7"
+ScreenGui.Parent = CoreGui
+
+-- القائمة الرئيسية (Main Frame)
+local MainFrame = Instance.new("Frame")
+MainFrame.Size = UDim2.new(0, 350, 0, 460)
+MainFrame.Position = UDim2.new(0.5, -175, 0.5, -230)
+MainFrame.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
+MainFrame.BorderSizePixel = 0
+MainFrame.Active = true
+MainFrame.Draggable = true
+MainFrame.Parent = ScreenGui
+
+-- عنوان السكريبت
+local Title = Instance.new("TextLabel")
+Title.Size = UDim2.new(1, 0, 0, 45)
+Title.BackgroundColor3 = Color3.fromRGB(45, 45, 45)
+Title.TextColor3 = Color3.fromRGB(255, 255, 255)
+Title.TextSize = 18
+Title.Font = Enum.Font.SourceSansBold
+Title.Text = "b7 Script Hub"
+Title.Parent = MainFrame
+
+-- دالة لإنشاء زر في القائمة الرئيسية
+local function createButton(name, posY)
+	local btn = Instance.new("TextButton")
+	btn.Size = UDim2.new(0.9, 0, 0, 40)
+	btn.Position = UDim2.new(0.05, 0, 0, posY)
+	btn.BackgroundColor3 = Color3.fromRGB(50, 50, 50)
+	btn.TextColor3 = Color3.fromRGB(255, 255, 255)
+	btn.TextSize = 16
+	btn.Font = Enum.Font.SourceSansBold
+	btn.Text = name
+	btn.Parent = MainFrame
+	return btn
+end
+
+-- الأزرار الرئيسية
+local btnSG = createButton("sg", 60)
+local btnOldAnim = createButton("Old animation", 110)
+local btnSky = createButton("Sky", 160)
+local btnShiftLock = createButton("Shift Lock", 210)
+local btnFling = createButton("Fling", 260)
+
+
+-- ==========================================
+-- قائمة السماء الفرعية (Sky Menu)
+-- ==========================================
+local SkyFrame = Instance.new("ScrollingFrame")
+SkyFrame.Size = UDim2.new(1, 0, 1, -45)
+SkyFrame.Position = UDim2.new(0, 0, 0, 45)
+SkyFrame.BackgroundColor3 = Color3.fromRGB(35, 35, 35)
+SkyFrame.BorderSizePixel = 0
+SkyFrame.Visible = false
+SkyFrame.CanvasSize = UDim2.new(0, 0, 0, 420)
+SkyFrame.ScrollBarThickness = 6
+SkyFrame.Parent = MainFrame
+
+local BackSkyBtn = Instance.new("TextButton")
+BackSkyBtn.Size = UDim2.new(0.9, 0, 0, 35)
+BackSkyBtn.Position = UDim2.new(0.05, 0, 0, 10)
+BackSkyBtn.BackgroundColor3 = Color3.fromRGB(180, 50, 50)
+BackSkyBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
+BackSkyBtn.TextSize = 15
+BackSkyBtn.Font = Enum.Font.SourceSansBold
+BackSkyBtn.Text = "<- Back / رجوع"
+BackSkyBtn.Parent = SkyFrame
+
+BackSkyBtn.MouseButton1Click:Connect(function()
+	SkyFrame.Visible = false
+end)
+
+btnSky.MouseButton1Click:Connect(function()
+	SkyFrame.Visible = true
+end)
+
+local function createSkyButton(skyName, bk, dn, ft, lf, rt, up, starCount, sunSize, moonSize, posY)
+	local sBtn = Instance.new("TextButton")
+	sBtn.Size = UDim2.new(0.9, 0, 0, 35)
+	sBtn.Position = UDim2.new(0.05, 0, 0, posY)
+	sBtn.BackgroundColor3 = Color3.fromRGB(60, 60, 60)
+	sBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
+	sBtn.TextSize = 14
+	sBtn.Font = Enum.Font.SourceSans
+	sBtn.Text = skyName
+	sBtn.Parent = SkyFrame
+
+	sBtn.MouseButton1Click:Connect(function()
+		for _, v in ipairs(Lighting:GetChildren()) do
+			if v:IsA("Sky") then v:Destroy() end
+		end
+		local sky = Instance.new("Sky")
+		sky.Name = skyName
+		sky.SkyboxBk = bk
+		sky.SkyboxDn = dn
+		sky.SkyboxFt = ft
+		sky.SkyboxLf = lf
+		sky.SkyboxRt = rt
+		sky.SkyboxUp = up
+		sky.StarCount = starCount or 3000
+		sky.SunAngularSize = sunSize or 0
+		sky.MoonAngularSize = moonSize or 0
+		sky.Parent = Lighting
+	end)
+end
+
+createSkyButton("Choco cat", "rbxassetid://97635485139959", "rbxassetid://111396050686595", "rbxassetid://126080537905263", "rbxassetid://122970509731331", "rbxassetid://85696704731034", "rbxassetid://103401249117757", 3000, 0, 0, 55)
+createSkyButton("Purple devy", "rbxassetid://110258526859280", "rbxassetid://135958935216220", "rbxassetid://76761081931241", "rbxassetid://124933642603096", "rbxassetid://87057567180787", "rbxassetid://102863190872817", 0, 0, 0, 95)
+createSkyButton("Pusheen sky 2.0", "rbxassetid://89192509171418", "rbxassetid://73864340815280", "rbxassetid://79517340188889", "rbxassetid://137786052451039", "rbxassetid://130733293493264", "rbxassetid://81872996935460", 3000, 0, 0, 135)
+createSkyButton("Aurora", "rbxassetid://108060153506591", "rbxassetid://100635710626156", "rbxassetid://99410162887331", "rbxassetid://106585907106620", "rbxassetid://107424338373724", "rbxassetid://121629677817605", 3000, 0, 0, 175)
+createSkyButton("Kuromi sky", "rbxassetid://112890939214100", "rbxassetid://94107390237205", "rbxassetid://95781650997013", "rbxassetid://87354574244067", "rbxassetid://72480480156673", "rbxassetid://93131493205162", 3000, 21, 11, 215)
+createSkyButton("Billie sky", "rbxassetid://96872763324980", "rbxassetid://136699999413389", "rbxassetid://90547004293864", "rbxassetid://137786052451039", "rbxassetid://86195794785935", "rbxassetid://71481407456803", 0, 0, 0, 255)
+createSkyButton("Space blue", "rbxassetid://104643890675419", "rbxassetid://110057040577555", "rbxassetid://89066374983264", "rbxassetid://129341572630305", "rbxassetid://72052652946170", "rbxassetid://111329050716814", 3000, 21, 21, 295)
+createSkyButton("Scream", "rbxassetid://113173338090858", "rbxassetid://131539208845647", "rbxassetid://127635683435480", "rbxassetid://113927408882428", "rbxassetid://118099387399799", "rbxassetid://116959435270722", 3000, 0, 0, 335)
+createSkyButton("Black devy", "rbxassetid://106342545697935", "rbxassetid://108181680838932", "rbxassetid://94254473316976", "rbxassetid://96748376849114", "rbxassetid://102994179004648", "rbxassetid://108230393299895", 3000, 0, 0, 375)
+
+
+-- ==========================================
+-- قائمة Shift Lock الفرعية (Shift Lock Menu)
+-- ==========================================
+local ShiftLockFrame = Instance.new("ScrollingFrame")
+ShiftLockFrame.Size = UDim2.new(1, 0, 1, -45)
+ShiftLockFrame.Position = UDim2.new(0, 0, 0, 45)
+ShiftLockFrame.BackgroundColor3 = Color3.fromRGB(35, 35, 35)
+ShiftLockFrame.BorderSizePixel = 0
+ShiftLockFrame.Visible = false
+ShiftLockFrame.CanvasSize = UDim2.new(0, 0, 0, 300)
+ShiftLockFrame.ScrollBarThickness = 6
+ShiftLockFrame.Parent = MainFrame
+
+local BackShiftBtn = Instance.new("TextButton")
+BackShiftBtn.Size = UDim2.new(0.9, 0, 0, 35)
+BackShiftBtn.Position = UDim2.new(0.05, 0, 0, 10)
+BackShiftBtn.BackgroundColor3 = Color3.fromRGB(180, 50, 50)
+BackShiftBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
+BackShiftBtn.TextSize = 15
+BackShiftBtn.Font = Enum.Font.SourceSansBold
+BackShiftBtn.Text = "<- Back / رجوع"
+BackShiftBtn.Parent = ShiftLockFrame
+
+BackShiftBtn.MouseButton1Click:Connect(function()
+	ShiftLockFrame.Visible = false
+end)
+
+btnShiftLock.MouseButton1Click:Connect(function()
+	ShiftLockFrame.Visible = true
+end)
+
+local function setShiftLockCursor(assetId)
+	pcall(function()
+		local mouse = localPlayer:GetMouse()
+		mouse.Icon = "rbxassetid://" .. tostring(assetId)
+	end)
+end
+
+local function createShiftButton(name, assetId, posY)
+	local sBtn = Instance.new("TextButton")
+	sBtn.Size = UDim2.new(0.9, 0, 0, 35)
+	sBtn.Position = UDim2.new(0.05, 0, 0, posY)
+	sBtn.BackgroundColor3 = Color3.fromRGB(60, 60, 60)
+	sBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
+	sBtn.TextSize = 14
+	sBtn.Font = Enum.Font.SourceSans
+	sBtn.Text = name
+	sBtn.Parent = ShiftLockFrame
+
+	sBtn.MouseButton1Click:Connect(function()
+		setShiftLockCursor(assetId)
+	end)
+end
+
+createShiftButton("Rainbow", "77334061708375", 55)
+createShiftButton("Black", "125544346072635", 95)
+createShiftButton("Red Cursor", "92409175012847", 135)
+createShiftButton("White Cursor", "101955011342491", 175)
+createShiftButton("Purple", "105227484929270", 215)
+createShiftButton("Bear (دب)", "110506104090701", 255)
+
+
+-- ==========================================
+-- قائمة Fling الفرعية (Fling Menu)
+-- ==========================================
+local FlingFrame = Instance.new("Frame")
+FlingFrame.Size = UDim2.new(1, 0, 1, -45)
+FlingFrame.Position = UDim2.new(0, 0, 0, 45)
+FlingFrame.BackgroundColor3 = Color3.fromRGB(35, 35, 35)
+FlingFrame.BorderSizePixel = 0
+FlingFrame.Visible = false
+FlingFrame.Parent = MainFrame
+
+local BackFlingBtn = Instance.new("TextButton")
+BackFlingBtn.Size = UDim2.new(0.9, 0, 0, 35)
+BackFlingBtn.Position = UDim2.new(0.05, 0, 0, 10)
+BackFlingBtn.BackgroundColor3 = Color3.fromRGB(180, 50, 50)
+BackFlingBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
+BackFlingBtn.TextSize = 15
+BackFlingBtn.Font = Enum.Font.SourceSansBold
+BackFlingBtn.Text = "<- Back / رجوع"
+BackFlingBtn.Parent = FlingFrame
+
+BackFlingBtn.MouseButton1Click:Connect(function()
+	FlingFrame.Visible = false
+end)
+
+btnFling.MouseButton1Click:Connect(function()
+	FlingFrame.Visible = true
+end)
+
+local RunFlingBtn = Instance.new("TextButton")
+RunFlingBtn.Size = UDim2.new(0.9, 0, 0, 45)
+RunFlingBtn.Position = UDim2.new(0.05, 0, 0, 60)
+RunFlingBtn.BackgroundColor3 = Color3.fromRGB(60, 60, 60)
+RunFlingBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
+RunFlingBtn.TextSize = 16
+RunFlingBtn.Font = Enum.Font.SourceSansBold
+RunFlingBtn.Text = "Run Anti-Fling / Fling Script"
+RunFlingBtn.Parent = FlingFrame
+
+RunFlingBtn.MouseButton1Click:Connect(function()
+	pcall(function()
+		loadstring(game:HttpGet("https://raw.githubusercontent.com/sytcal/antifling/main/9999"))()
+	end)
+end)
+
+
+-- ==========================================
+-- قائمة Old animation الفرعية (Old Animation Menu)
+-- ==========================================
+local OldAnimFrame = Instance.new("Frame")
+OldAnimFrame.Size = UDim2.new(1, 0, 1, -45)
+OldAnimFrame.Position = UDim2.new(0, 0, 0, 45)
+OldAnimFrame.BackgroundColor3 = Color3.fromRGB(35, 35, 35)
+OldAnimFrame.BorderSizePixel = 0
+OldAnimFrame.Visible = false
+OldAnimFrame.Parent = MainFrame
+
+local BackOldAnimBtn = Instance.new("TextButton")
+BackOldAnimBtn.Size = UDim2.new(0.9, 0, 0, 35)
+BackOldAnimBtn.Position = UDim2.new(0.05, 0, 0, 10)
+BackOldAnimBtn.BackgroundColor3 = Color3.fromRGB(180, 50, 50)
+BackOldAnimBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
+BackOldAnimBtn.TextSize = 15
+BackOldAnimBtn.Font = Enum.Font.SourceSansBold
+BackOldAnimBtn.Text = "<- Back / رجوع"
+BackOldAnimBtn.Parent = OldAnimFrame
+
+BackOldAnimBtn.MouseButton1Click:Connect(function()
+	OldAnimFrame.Visible = false
+end)
+
+btnOldAnim.MouseButton1Click:Connect(function()
+	OldAnimFrame.Visible = true
+	-- تفعيل Retargeting للأنيميشن القديم تلقائياً
+	pcall(function()
+		game.Workspace.Retargeting = Enum.AnimatorRetargetingMode.Disabled
+	end)
+end)
+
+-- زر 1: anim gun no sound " dusk "
+local DaskBtn = Instance.new("TextButton")
+DaskBtn.Size = UDim2.new(0.9, 0, 0, 40)
+DaskBtn.Position = UDim2.new(0.05, 0, 0, 60)
+DaskBtn.BackgroundColor3 = Color3.fromRGB(40, 40, 40)
+DaskBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
+DaskBtn.TextSize = 13
+DaskBtn.Font = Enum.Font.SourceSansBold
+DaskBtn.Text = "🔫 anim gun no sound [OFF]"
+DaskBtn.Parent = OldAnimFrame
+
+local actDusk = false
+DaskBtn.MouseButton1Click:Connect(function()
+	actDusk = not actDusk
+	DaskBtn.BackgroundColor3 = actDusk and Color3.fromRGB(0, 120, 255) or Color3.fromRGB(40, 40, 40)
+	DaskBtn.Text = actDusk and "🔫 anim gun no sound [ON]" or "🔫 anim gun no sound [OFF]"
+end)
+
+-- كود تشغيل وتطبيق سكريبت دسك (Dusk) للأنيميشن بدون صوت
+local function hookChar(c)
+	local h = c:WaitForChild("Humanoid", 5)
+	if not h then return end
+	h.AnimationPlayed:Connect(function(t)
+		if not actDusk then return end
+		local id = tostring(t.Animation.AnimationId):lower()
+		local nm = tostring(t.Name):lower()
+		if nm:find("throw") or nm:find("stab") or nm:find("slash") or id:find("throw") or id:find("247206411") then 
+			return 
+		end
+		if id:find("reload") or nm:find("reload") or nm:find("recarga") or id:find("3400611413") or id:find("3400610059") or t.Priority == Enum.AnimationPriority.Action then 
+			t:Stop()
+		end
+	end)
+end
+if localPlayer.Character then hookChar(localPlayer.Character) end
+localPlayer.CharacterAdded:Connect(hookChar)
+
+
+-- زر 2: Animation gun with sound
+local SoundGunBtn = Instance.new("TextButton")
+SoundGunBtn.Size = UDim2.new(0.9, 0, 0, 40)
+SoundGunBtn.Position = UDim2.new(0.05, 0, 0, 110)
+SoundGunBtn.BackgroundColor3 = Color3.fromRGB(60, 60, 60)
+SoundGunBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
+SoundGunBtn.TextSize = 13
+SoundGunBtn.Font = Enum.Font.SourceSansBold
+SoundGunBtn.Text = "🔊 Animation Gun With Sound"
+SoundGunBtn.Parent = OldAnimFrame
+
+SoundGunBtn.MouseButton1Click:Connect(function()
+	pcall(function()
+		loadstring(game:HttpGet("https://rawscripts.net/raw/Universal-Script-mmv-no-reload-animation-226822"))()
+	end)
+end)
