@@ -1,0 +1,114 @@
+local Players = game:GetService("Players")
+local RunService = game:GetService("RunService")
+local CoreGui = game:GetService("CoreGui")
+
+local player = Players.LocalPlayer
+local camera = workspace.CurrentCamera
+
+-- إزالة أي واجهة قديمة لمنع التكرار
+if CoreGui:FindFirstChild("SpeedGlitchGui") then
+    CoreGui.SpeedGlitchGui:Destroy()
+end
+
+-- إنشاء واجهة جديدة لأزرار الجوال
+local screenGui = Instance.new("ScreenGui")
+screenGui.Name = "SpeedGlitchGui"
+screenGui.Parent = CoreGui
+
+-- زر التشغيل والإيقاف الموحد (Toggle Speed)
+local toggleButton = Instance.new("TextButton")
+toggleButton.Name = "ToggleButton"
+toggleButton.Parent = screenGui
+toggleButton.Size = UDim2.new(0, 160, 0, 50)
+toggleButton.Position = UDim2.new(0, 50, 0, 150)
+toggleButton.BackgroundColor3 = Color3.fromRGB(255, 60, 60)
+toggleButton.Text = "Speed: OFF"
+toggleButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+toggleButton.TextSize = 16
+toggleButton.Font = Enum.Font.SourceSansBold
+
+local corner = Instance.new("UICorner")
+corner.CornerRadius = UDim.new(0, 10)
+corner.Parent = toggleButton
+
+-- حالة السكربت
+local isEnabled = false
+
+-- التحكم بزر واحد (اضغط يشتغل، اضغط ثاني يطفي ويصفّر السرعة)
+toggleButton.MouseButton1Click:Connect(function()
+    isEnabled = not isEnabled
+    if isEnabled then
+        toggleButton.Text = "Speed: ON"
+        toggleButton.BackgroundColor3 = Color3.fromRGB(60, 255, 60)
+    else
+        toggleButton.Text = "Speed: OFF"
+        toggleButton.BackgroundColor3 = Color3.fromRGB(255, 60, 60)
+        
+        -- إيقاف وتصفير السرعة فوراً عند الإطفاء
+        local char = player.Character
+        if char then
+            local rootPart = char:FindFirstChild("HumanoidRootPart")
+            if rootPart then
+                rootPart.AssemblyLinearVelocity = Vector3.new(0, rootPart.AssemblyLinearVelocity.Y, 0)
+            end
+        end
+    end
+end)
+
+-- وظيفة التشغيل الأساسية مع الشخصية
+local function setup(char)
+    local humanoidRootPart = char:WaitForChild("HumanoidRootPart")
+    local humanoid = char:WaitForChild("Humanoid")
+    
+    local lastLook = camera.CFrame.LookVector
+    
+    RunService.RenderStepped:Connect(function()
+        if not isEnabled then return end
+        if not humanoidRootPart or not humanoid then return end
+        
+        -- الشروط: في الهواء + تحرك الشاشة + ماشي
+        local currentState = humanoid:GetState()
+        local inAir = (currentState == Enum.HumanoidStateType.Freefall or currentState == Enum.HumanoidStateType.Jumping)
+        
+        if inAir then
+            local currentLook = camera.CFrame.LookVector
+            local diff = (currentLook - lastLook).Magnitude
+            lastLook = currentLook
+            
+            local moveDir = humanoid.MoveDirection
+            
+            if moveDir.Magnitude > 0 then
+                local currentSpeed = 0
+                
+                -- تحديد السرعة حسب قوة اللفة
+                if diff >= 0.2 then
+                    currentSpeed = 175 -- لفة عادية / قوية
+                elseif diff >= 0.07 then
+                    currentSpeed = 90  -- لفة خفيفة
+                end
+                
+                if currentSpeed > 0 then
+                    local targetDir = Vector3.new(moveDir.X, 0, moveDir.Z).Unit
+                    local currentVel = humanoidRootPart.AssemblyLinearVelocity
+                    
+                    humanoidRootPart.AssemblyLinearVelocity = Vector3.new(
+                        targetDir.X * currentSpeed,
+                        currentVel.Y,
+                        targetDir.Z * currentSpeed
+                    )
+                end
+            end
+        end
+    end)
+end
+
+if player.Character then
+    setup(player.Character)
+end
+
+player.CharacterAdded:Connect(function(char)
+    task.wait(0.3)
+    setup(char)
+end)
+
+print("⚡ Single Toggle Button (Speed 90 / 175) Loaded Successfully! 🚀")
